@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Suhas H — Portfolio</title>
+    <meta name="description" content="A neon‑mesh, motion‑rich portfolio for Suhas H — Full‑Stack Developer (Spring Boot, React, JWT, Hibernate, MySQL, MongoDB)."/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800;900&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================
+            TOKENS (rgb, hex, hsl used)
+            =========================== */
+        :root{
+            --bg: hsl(240 10% 5%);
+            --text: hsl(0 0% 100% / .95);
+            --muted: hsl(0 0% 100% / .7);
+            --accent: #46ffae;        /* hex */
+            --accent-2: hsl(275 100% 60%); /* hsl */
+            --accent-3: rgb(255, 90, 31);  /* rgb */
+            --card: hsl(240 14% 8% / .9);
+            --ring: hsl(170 100% 60% / .35);
+            --radius: 22px;
+            --shadow: 0 10px 40px hsl(0 0% 0% / .45);
+            --maxw: 1180px;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0; font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--text);
+            background: var(--bg);
+            overflow-x:hidden;
+        }
+        a{color:inherit}
+
+        /* ===========================
+            BACKGROUND: Neon Mesh + Parallax Stars
+            =========================== */
+        .mesh, .stars, .glow{position:fixed; inset:0; pointer-events:none; z-index:0}
+        .mesh{
+            background:
+            radial-gradient(1200px 900px at 15% -10%, hsl(280 100% 60% / .25), transparent 60%),
+            radial-gradient(1000px 800px at 110% 110%, hsl(170 100% 60% / .22), transparent 65%),
+            conic-gradient(from 210deg at 70% 30%, var(--accent), var(--accent-2), var(--accent-3), var(--accent));
+            filter: blur(60px) saturate(140%);
+            opacity:.18; animation: spin 60s linear infinite;
+        }
+        .stars{
+            background-image: radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+                            radial-gradient(1px 1px at 70% 80%, #fff, transparent),
+                            radial-gradient(1px 1px at 40% 60%, #fff, transparent),
+                            radial-gradient(2px 2px at 85% 20%, #fff, transparent);
+            opacity:.15; transform: translateZ(0);
+            animation: drift 120s linear infinite;
+        }
+        .glow{box-shadow: inset 0 0 160px 40px hsl(0 0% 0% / .6)}
+        @keyframes spin{to{transform:rotate(1turn)}}
+        @keyframes drift{to{background-position: 2000px 0, -1500px 0, 1200px 0, -1000px 0}}
+
+        /* ===========================
+        NAVBAR
+        =========================== */
+        header{position:sticky; top:0; z-index:40; backdrop-filter: blur(8px);}
+        .nav{
+            max-width:var(--maxw); margin:0 auto; padding:14px 18px; display:flex; gap:12px; align-items:center; justify-content:space-between;
+            background: linear-gradient(180deg, hsl(0 0% 100% / .05), transparent); border-bottom:1px solid hsl(0 0% 100% / .08);
+        }
+        .brand{display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.4px}
+        .badge{
+            width:36px; height:36px; border-radius:12px; background:linear-gradient(135deg,var(--accent),var(--accent-2));
+            position:relative; box-shadow: var(--shadow);
+        }
+        .badge::after{content:""; position:absolute; inset:0; background: radial-gradient(circle at 30% 30%, #fff5, transparent 40%)}
+        .links{display:flex; gap:14px; flex-wrap:wrap}
+        .links a{color:var(--muted); text-decoration:none; font-weight:700}
+        .cta{display:flex; gap:10px}
+        .btn{--bgc:var(--accent); display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:999px;
+            border:1px solid var(--ring); background:linear-gradient(180deg, var(--bgc), color-mix(in oklab, var(--bgc) 65%, black)); color:white; font-weight:800; text-decoration:none; box-shadow:var(--shadow); transition: transform .2s ease, filter .2s ease}
+        .btn:hover{transform:translateY(-2px); filter:brightness(1.08)}
+        .ghost{background:transparent; color:var(--text); border-color:hsl(0 0% 100% /.15)}
+        .edu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 5%;
+            flex-wrap: wrap; /* ensures responsiveness */
+        }
+
+        .edu-item strong {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .edu-item .muted {
+        font-size: 0.9rem;
+        color: var(--muted);
+        }
+        /* ===========================
+        LAYOUT HELPERS
+        =========================== */
+        .wrap{max-width:var(--maxw); margin:0 auto; padding:28px 18px; position:relative; z-index:1}
+        .grid{display:grid; gap:16px}
+        .two{grid-template-columns:repeat(2,1fr)}
+        .three{grid-template-columns:repeat(3,1fr)}
+        .four{grid-template-columns:repeat(4,1fr)}
+        @media (max-width:1000px){.three{grid-template-columns:repeat(2,1fr)} .four{grid-template-columns:repeat(2,1fr)}}
+        @media (max-width:680px){.two,.three,.four{grid-template-columns:1fr}}
+
+        .card{position:relative; background:linear-gradient(180deg, var(--card), hsl(240 14% 6% /.9)); border:1px solid hsl(0 0% 100% / .08); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); overflow:hidden}
+        .card::before{content:""; position:absolute; inset:-2px; border-radius:inherit; padding:1px; background: conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent-3), var(--accent)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ring 5.5s linear infinite}
+        @keyframes ring{to{transform:rotate(1turn)}}
+
+        .kicker{display:inline-flex; gap:8px; align-items:center; padding:8px 12px; border-radius:999px; border:1px solid hsl(0 0% 100% /.12); background:hsl(0 0% 100% /.04); color:var(--muted); font-weight:700; font-size:12px}
+        .pill{padding:6px 10px; border-radius:999px; background:hsl(0 0% 100% /.06); border:1px solid hsl(0 0% 100% /.12); font-size:12px; font-weight:800; color:var(--muted)}
+        .section-title{font-size:22px; font-weight:900; letter-spacing:.3px; margin:0 0 12px}
+
+        /* ===========================
+        HERO: split, marquee, floating badges
+        =========================== */
+        .hero{display:grid; grid-template-columns:1.2fr 1fr; gap:20px; align-items:center}
+        @media(max-width:950px){.hero{grid-template-columns:1fr}}
+        h1.title{font-size: clamp(34px, 5vw, 68px); line-height:1.03; margin:10px 0 12px; font-weight:900; letter-spacing:-.5px; background: linear-gradient(90deg, var(--text), var(--accent)); -webkit-background-clip:text; color:transparent; filter: drop-shadow(0 6px 20px hsl(170 100% 60% /.18))}
+        .subtitle{color:var(--muted); font-size: clamp(16px, 2vw, 20px)}
+
+        .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px}
+        .stat{background:hsl(0 0% 100% /.05); border:1px solid hsl(0 0% 100% /.1); border-radius:14px; text-align:center; padding:12px}
+        .stat b{font-size:22px}
+
+        .marquee{display:flex; gap:12px; overflow:hidden; mask: linear-gradient(90deg, transparent, #000 0%, #000 100%, transparent)}
+        .marquee .pill{white-space:nowrap; animation: scroll 20s linear infinite}
+        .marquee .pill:nth-child(odd){animation: duration 0s}
+        @keyframes scroll{to{transform:translateX(-50%)}}
+
+        /* ===========================
+        TIMELINE
+        =========================== */
+        .timeline{position:relative; padding-left:22px}
+        .timeline::before{content:""; position:absolute; left:8px; top:4px; bottom:4px; width:2px; background: linear-gradient(var(--accent-2), transparent)}
+        .tl{position:relative; margin:14px 0}
+        .tl::before{content:""; position:absolute; left:-2px; top:8px; width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px hsl(170 100% 60% /.25)}
+
+        /* ===========================
+        CONTACT FORM
+        =========================== */
+        .input{width:100%; margin:6px 0 12px; padding:12px 14px; border-radius:14px; border:1px solid hsl(0 0% 100% /.14); background:hsl(0 0% 100% /.06); color:var(--text); outline:none; transition:border-color .2s ease, box-shadow .2s ease}
+        .input:focus{border-color:var(--ring); box-shadow:0 0 0 3px var(--ring)}
+
+        /* ===========================
+        ANIMATION: reveal on view
+        =========================== */
+        [data-animate]{opacity:0; transform: translateY(12px) scale(.98)}
+        .in{opacity:1; transform:none; transition:.6s cubic-bezier(.21,1,.21,1)}
+
+        footer{border-top:1px solid hsl(0 0% 100% /.08); margin-top:44px}
+
+        /* ===========================
+        BACK TO TOP BUTTON
+        =========================== */
+        #topButton {
+            position: fixed;
+            bottom: 10%;
+            right: 30px;
+            z-index: 99;
+            font-size: 25px;
+            border: none;
+            outline: none;
+            background: white;
+            color: black;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        #topButton:hover {
+            transform: translateY(-4px);
+            filter: brightness(1.15);
+        }
+
+        #topButton.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Floating settings */
+        .controls{position:fixed; right:16px; bottom:16px; display:flex; gap:8px; z-index:50}
+        .control{padding:10px 12px; border-radius:14px; border:1px solid hsl(0 0% 100% /.12); background:hsl(0 0% 100% /.06); color:var(--text); font-weight:800; cursor:pointer; box-shadow:var(--shadow)}
+        .picker{width:44px; height:44px; padding:0; overflow:hidden}
+        .picker input{width:100%; height:100%; border:none; background:transparent; padding:0; cursor:pointer}
+    </style>
+    </head>
+    <body>
+        <!-- BACKGROUND LAYERS -->
+        <div class="mesh" aria-hidden="true"></div>
+        <div class="stars" aria-hidden="true"></div>
+        <div class="glow" aria-hidden="true"></div>
+
+        <!-- NAV -->
+        <header>
+            <nav class="nav">
+                <div class="links">
+                    <a href="#about">About</a>
+                    <a href="#education">Education</a>
+                    <a href="#experience">Internship</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#skills">Skills</a>
+                    <a href="#certs">Certifications</a>
+                    <a href="#achieve">Achievements</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="cta">
+                    <a class="btn" href="#contact">Hire Me</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- HERO -->
+        <section class="wrap">
+        <div class="hero">
+            <div>
+            <h1 class="title">Suhas H</h1>
+            <div style="padding-bottom: 1%;">
+                <span class="kicker">Full - Stack Developer</span>
+                <span class="kicker">Bengaluru</span>
+            </div>
+
+            <div>
+            <div class="card" aria-label="Contact card" style="transform:perspective(1000px) rotateX(0) rotateY(0); transition:transform .4s ease">
+                <div class="grid two" style="margin-top:10px">
+                <div class="card" style="padding:12px">
+                    <div class="muted">Email</div>
+                    <a style="font-family:'IBM Plex Mono',monospace" href="mailto:suhasharish9090@gmail.com">suhasharish9090@gmail.com</a>
+                </div>
+                <div class="card" style="padding:12px">
+                    <div class="muted">Phone</div>
+                    <a style="font-family:'IBM Plex Mono',monospace" href="tel:+919480506235">+91‑9480506235</a>
+                </div>
+                <div class="card" style="padding:12px">
+                    <div class="muted">LinkedIn</div>
+                    <a style="font-family:'IBM Plex Mono',monospace" href="https://www.linkedin.com/in/suhas-h123">Click to redirect</a>
+                </div>
+                <div class="card" style="padding:12px">
+                    <div class="muted">GitHub</div>
+                    <a style="font-family:'IBM Plex Mono',monospace" href="https://github.com/SuhasH1234">Click to redirect</a>
+                </div>
+                </div>
+            </div>
+            </div>
+            <div class="stats">
+                <div class="stat"><b>5+</b><div class="muted">Major Projects</div></div>
+                <div class="stat"><b>8.94/10</b><div class="muted">CGPA</div></div>
+                <div class="stat"><b>2025</b><div class="muted">Graduation Year</div></div>
+            </div>
+            <div class="marquee" style="margin:10px 0 0">
+                <span class="pill">Java</span>
+                <span class="pill">Spring Boot</span>
+                <span class="pill">Spring Security</span>
+                <span class="pill">Hibernate</span>
+                <span class="pill">JWT</span>
+                <span class="pill">REST APIs</span>
+                <span class="pill">MySQL</span>
+                <span class="pill">MongoDB</span>
+                <span class="pill">React.js</span>
+                <span class="pill">JavaScript</span>
+                <span class="pill">HTML</span>
+                <span class="pill">CSS</span>
+                <span class="pill">Git</span>
+                <span class="pill">Postman</span>
+            </div>
+            </div>
+        </div>
+        <p></p>
+        </section>
+
+        <!-- Career Objective -->
+        <section id="about" class="wrap">
+            <h2 class="section-title">Career Objective</h2>
+            <div class="card">
+                Tech-savvy and ambitious Full Stack Developer with hands-on experience in full-stack development and project management. 
+            Proficient in key programming languages for building and managing web applications. Strong problem-solving, organizational, and 
+            multitasking skills with a proven ability to adapt in dynamic and fast-paced environments.
+            </div>
+        </section>
+
+        <!-- EDUCATION -->
+        <section id="education" class="wrap">
+        <h2 class="section-title">Education</h2>
+            <div class="grid one">
+            <div class="card">
+                <div class="tl">
+                    <div class="edu-item">
+                        <strong>Bachelor of Technology (B.Tech.) in Computer Science and Engineering — Presidency University</strong>
+                        <span class="muted">Nov 2025</span>
+                    </div>
+                </div>
+                <div class="tl">
+                    <div class="edu-item">
+                        <strong>Pre-University — BGS PU College</strong>
+                        <span class="muted">Jul 2021</span>
+                    </div>
+                </div>
+                <div class="tl">
+                    <div class="edu-item">
+                        <strong>Class 10 — St. Mary’s Public School (ICSE)</strong>
+                        <span class="muted">May 2019</span>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- EXPERIENCE -->
+        <section id="experience" class="wrap">
+        <h2 class="section-title">Internship</h2>
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <strong>React.js Developer — Vector Stack</strong>
+                <span class="muted">Jul 2024 — Aug 2024</span>
+            </div>
+            <ul>
+                <strong>Key Responsibilities & Contributions :</strong>
+                <li>Developed responsive and dynamic web interfaces using React.js to enhance user experience and functionality.</li>
+                <li>Integrated and tested RESTful APIs using Postman for seamless frontend-backend communication.</li>
+                <li>Managed source code using Git, performed code reviews, and ensured codebase integrity.</li>
+                <li>Optimized performance by following clean coding standards and improving component reusability.</li>
+                <li>Debugged and resolved issues, implemented new features, and maintained cross-browser compatibility for consistent performance across platforms.</li>
+            </ul>
+        </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section id="projects" class="wrap">
+        <h2 class="section-title">Projects</h2>
+        <div class="grid three">
+            <article class="card">
+            <h3>Timetable Management System</h3>
+            <p class="muted">Role‑based academic timetable platform with secure JWT auth, scheduling, faculty & student allocation, and CRUD APIs.</p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap">
+                <span class="pill">Java</span>
+                <span class="pill">Spring Boot</span>
+                <span class="pill">Spring Security</span>
+                <span class="pill">Hibernate</span>
+                <span class="pill">React.js</span>
+                <span class="pill">JavaScript</span>
+                <span class="pill">MySQL</span>
+                <span class="pill">+ more</span>
+            </div><br>
+            <small class="muted"><strong>Responsibilities :</strong> <br>Backend & API Dev, Frontend Integration, Database Management, Authentication, API Testing.</small>
+            </article>
+            <article class="card">
+                <h3>Smart Communication Platform — Varanasi Artisans</h3>
+                <p class="muted">Artisan marketplace with product uploads, analytics, ranking, events, COD trust mechanism, and exhibition dashboard.</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap">
+                    <span class="pill">React.js</span>
+                    <span class="pill">JavaScript</span>
+                    <span class="pill">Node.js</span>
+                    <span class="pill">MongoDB</span>
+                    <span class="pill">REST APIs</span>
+                    <span class="pill">+ more</span>
+                </div><br>
+                <small class="muted"><strong>Responsibilities :</strong><br> Frontend development, Backend Integration, Database Management, Authentication, Deployment.</small>
+            </article>
+            <article class="card">
+                <h3>Amazon Clone</h3>
+                <p class="muted">Frontend clone replicating 95% of Amazon’s layout for a familiar, accessible shopping UI.</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap">
+                    <span class="pill">HTML</span>
+                    <span class="pill">CSS</span>
+                </div><br>
+                <small class="muted"><strong>Responsibilities :</strong><br> UI design, Frontend Development, Responsive layout.</small>
+            </article>
+        </div>
+        </section>
+
+        <!-- SKILLS -->
+        <section id="skills" class="wrap">
+        <h2 class="section-title">Skills</h2>
+        <div class="grid three">
+            <div class="card">
+                <strong>Programming :</strong>
+                <p class="muted">C, C#, Java</p>
+            </div>
+            <div class="card">
+                <strong>Web Development :</strong>
+                <p class="muted">HTML, CSS, JavaScript, React.js</p>
+            </div>
+            <div class="card">
+                <strong>Backend :</strong>
+                <p class="muted">Spring Boot, Spring Security, JPA, Hibernate, Spring MVC</p>
+            </div>
+            <div class="card">
+                <strong>Databases :</strong>
+                <p class="muted">MySQL, MongoDB</p>
+            </div>
+            <div class="card">
+                <strong>APIs & Tools :</strong>
+                <p class="muted">RESTful APIs, Postman, Git</p>
+            </div>
+            <div class="card">
+                <strong>Soft Skills :</strong>
+                <p class="muted">Problem‑solving, Teamwork, Adaptability</p>
+            </div>
+        </div>
+        </section>
+
+        <!-- CERTIFICATIONS & ACHIEVEMENTS -->
+        <section id="certs" class="wrap">
+        <h2 class="section-title">Certifications</h2>
+        <div class="grid one">
+            <div class="card">
+                <ul>
+                    <li>Software Engineer — HackerRank</li>
+                    <li>Generative AI — Google</li>
+                    <li>Technology Job Simulation — Deloitte Australia</li>
+                    <li>Solutions Architecture Job Simulation — AWS</li>
+                </ul>
+            </div>
+        </div>
+        </section>
+        
+        <section id="achieve" class="wrap">
+        <h2 class="section-title">Achievements</h2>
+        <div class="grid one">
+            <div class="card">
+                <ul>
+                    <li>Maintained high academic performance with a consistent CGPA, showcasing academic excellence.</li>
+                    <li>Engaged in extracurricular activities, including tech workshops and IEEE events, enhancing leadership and teamwork skills.</li>
+                </ul>
+            </div>
+        </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="wrap">
+        <h2 class="section-title">Contact</h2>
+        <div class="grid one">
+            <form class="card" action="https://api.web3forms.com/submit" method="POST">
+                <!-- Your Web3Forms Access Key -->
+                <input type="hidden" name="access_key" value="7f6137c6-fef5-406a-aa04-43f67b98fb86">
+                <label>Name<br>
+                <input class="input" name="name" placeholder="Your name" required>
+                </label>
+                <label>Email<br>
+                <input class="input" type="email" name="email" placeholder="you@example.com" required>
+                </label>
+                <label>Message<br>
+                <textarea class="input" name="message" rows="5" placeholder="Say hi 👋" required></textarea>
+                </label>
+                <button class="btn" type="submit">Send Message</button>
+
+                <!-- Success Message -->
+                <p class="muted" id="form-status" style="margin-top:10px; display:none;">Message sent successfully ✅</p>
+            </form>
+        </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="wrap" style="text-align:center">
+            <div style="display:flex; justify-content:center; gap:8px; align-items:center; padding:16px 0">
+                <span class="muted">© <span id="year"></span> - Suhas H</span>
+            </div>
+        </footer>
+
+        <!-- CONTROLS -->
+        <div class="controls">
+            <button class="control" id="theme">Toggle Theme</button>
+            <label class="control picker" title="Pick your accent"><input id="accent" type="color" value="#46ffae"></label>
+        </div>
+
+        <!-- BACK TO TOP BUTTON -->
+        <button id="topButton" title="Go to top"><span>&#8593;</span></button>
+        
+        <script>
+            // Year + theme toggle + accent
+            document.getElementById('year').textContent = new Date().getFullYear();
+            const root = document.documentElement;
+            document.getElementById('theme').addEventListener('click',()=>{
+                if(root.style.getPropertyValue('--bg')){
+                const isLight = root.classList.toggle('light');
+                }
+                document.body.classList.toggle('light');
+                if(document.body.classList.contains('light')){
+                root.style.setProperty('--bg','hsl(0 0% 99%)');
+                root.style.setProperty('--text','hsl(240 10% 5% / .98)');
+                root.style.setProperty('--muted','hsl(240 6% 20% / .72)');
+                root.style.setProperty('--card','hsl(0 0% 100% / .92)');
+                } else {
+                root.style.setProperty('--bg','hsl(240 10% 5%)');
+                root.style.setProperty('--text','hsl(0 0% 100% / .95)');
+                root.style.setProperty('--muted','hsl(0 0% 100% / .7)');
+                root.style.setProperty('--card','hsl(240 14% 8% / .9)');
+                }
+            });
+            document.getElementById('accent').addEventListener('input',(e)=>{
+                root.style.setProperty('--accent', e.target.value);
+            });
+
+            // Reveal on view
+            const io = new IntersectionObserver((entries)=>{
+                entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); })
+            }, {threshold: .1});
+            document.querySelectorAll('[data-animate], .card, h1.title, .kicker, .pill').forEach(el=>{el.setAttribute('data-animate',''); io.observe(el)});
+
+            // Subtle 3D tilt on the hero card
+            const tilt = document.querySelector('.hero .card');
+            tilt?.addEventListener('mousemove', (e)=>{
+                const r = tilt.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width - .5; // -0.5..0.5
+                const y = (e.clientY - r.top) / r.height - .5;
+                tilt.style.transform = `perspective(1000px) rotateX(${(-y*6).toFixed(2)}deg) rotateY(${(x*6).toFixed(2)}deg)`
+            });
+            tilt?.addEventListener('mouseleave', ()=> tilt.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)');
+
+            // Keyboard helper
+            document.addEventListener('keydown', e=>{ if(e.key==='g') window.scrollTo({top:0, behavior:'smooth'}); });
+        </script>
+        <script>
+            // Show button when scrolling down
+            const topButton = document.getElementById("topButton");
+
+            window.addEventListener("scroll", () => {
+                if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+                topButton.classList.add("show");
+                } else {
+                topButton.classList.remove("show");
+                }
+            });
+
+            // Scroll to top smoothly
+            topButton.addEventListener("click", () => {
+                window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+                });
+            });
+        </script>
+    </body>
+</html>
